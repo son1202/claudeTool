@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude Code 深度應用：章節整理與補充講義</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EDF1F6;
+  --panel:#FFFFFF;
+  --ink:#14233B;
+  --ink-soft:#4A5B75;
+  --trace:#0F6CBD;
+  --trace-soft:#D6E6F6;
+  --amber:#A85C06;
+  --amber-soft:#FBEEDB;
+  --line:#C3CFDC;
+  --code-bg:#10203A;
+  --code-ink:#DCE8F7;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Heiti TC",sans-serif;
+  --mono:"JetBrains Mono","SFMono-Regular",Consolas,"Liberation Mono",monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#0D1828;
+    --panel:#15243A;
+    --ink:#E4ECF7;
+    --ink-soft:#9DB0C9;
+    --trace:#6CB4F2;
+    --trace-soft:#1C3554;
+    --amber:#F0B25E;
+    --amber-soft:#33281A;
+    --line:#2B3F5C;
+    --code-bg:#08111F;
+    --code-ink:#DCE8F7;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-size:17px;line-height:1.85;
+  -webkit-text-size-adjust:100%;
+}
+a{color:var(--trace);text-underline-offset:3px}
+a:focus-visible,summary:focus-visible{outline:3px solid var(--trace);outline-offset:3px;border-radius:2px}
+
+/* ---------- 版面 ---------- */
+.shell{max-width:1120px;margin:0 auto;padding:0 20px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+@media (min-width:960px){
+  .layout{grid-template-columns:230px minmax(0,1fr);gap:56px}
+}
+
+/* ---------- 頁首 ---------- */
+.masthead{padding:56px 0 40px;border-bottom:2px solid var(--ink)}
+.masthead h1{
+  font-size:clamp(2rem,6vw,3.5rem);font-weight:900;line-height:1.2;
+  letter-spacing:-0.01em;margin:0 0 18px;max-width:18em;
+}
+.masthead p{margin:0;max-width:40em;color:var(--ink-soft)}
+.facts{display:flex;flex-wrap:wrap;gap:8px 28px;margin:26px 0 0;padding:0;list-style:none;font-size:.92rem}
+.facts b{font-weight:700;color:var(--ink)}
+.facts li{color:var(--ink-soft)}
+
+/* 訊號路徑：課程頁描述的引導流程 */
+.path{margin:40px 0 0}
+.path h2{font-size:1rem;font-weight:700;margin:0 0 14px}
+.path ol{
+  list-style:none;margin:0;padding:0;display:grid;
+  grid-template-columns:repeat(3,1fr);gap:0;counter-reset:step;
+}
+@media (min-width:720px){.path ol{grid-template-columns:repeat(6,1fr)}}
+.path li{
+  counter-increment:step;position:relative;padding:22px 8px 0 0;
+  font-weight:700;font-size:.98rem;
+}
+.path li::before{
+  content:"";position:absolute;top:6px;left:0;right:0;height:2px;background:var(--trace);
+}
+.path li::after{
+  content:"";position:absolute;top:0;left:0;width:14px;height:14px;border-radius:50%;
+  background:var(--paper);border:3px solid var(--trace);
+}
+.path li span{display:block;font-weight:400;font-size:.82rem;color:var(--ink-soft);line-height:1.5}
+.path li:last-child::before{right:auto;width:14px}
+
+/* ---------- 導覽 ---------- */
+.nav{
+  position:sticky;top:0;z-index:5;background:var(--paper);
+  border-bottom:1px solid var(--line);margin:0 -20px;padding:0 20px;
+}
+.nav ul{list-style:none;margin:0;padding:10px 0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.nav ul::-webkit-scrollbar{display:none}
+.nav a{
+  display:block;white-space:nowrap;text-decoration:none;color:var(--ink);
+  font-size:.9rem;padding:6px 12px;border:1px solid var(--line);border-radius:4px;background:var(--panel);
+}
+.nav a b{color:var(--trace);margin-right:6px}
+@media (min-width:960px){
+  .nav{position:sticky;top:32px;align-self:start;border:0;margin:48px 0 0;padding:0;background:none}
+  .nav ul{flex-direction:column;gap:0;padding:0;overflow:visible;border-left:2px solid var(--line)}
+  .nav a{white-space:normal;border:0;border-radius:0;background:none;padding:10px 0 10px 18px;margin-left:-2px;border-left:2px solid transparent;line-height:1.5}
+  .nav a:hover{border-left-color:var(--trace)}
+  .nav a b{display:block;font-size:.8rem}
+}
+
+/* ---------- 章節 ---------- */
+main{padding:24px 0 80px;min-width:0}
+.notice{
+  background:var(--amber-soft);border-left:4px solid var(--amber);
+  padding:16px 20px;margin:24px 0 8px;font-size:.95rem;
+}
+.notice strong{color:var(--amber)}
+.chapter{padding:56px 0 8px;border-bottom:1px solid var(--line)}
+.chapter:last-of-type{border-bottom:0}
+.ch-num{
+  font-family:var(--mono);font-weight:600;font-size:.95rem;color:var(--trace);
+  display:flex;align-items:center;gap:12px;margin:0 0 10px;
+}
+.ch-num::after{content:"";flex:1;height:2px;background:var(--trace);opacity:.35}
+.chapter>h2{font-size:clamp(1.5rem,4.2vw,2.15rem);font-weight:900;line-height:1.35;margin:0 0 8px}
+.ch-meta{color:var(--ink-soft);font-size:.92rem;margin:0 0 24px}
+
+.origin{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--ink);padding:18px 22px 20px;margin:0 0 36px}
+.origin h3{font-size:.95rem;font-weight:700;margin:0 0 10px}
+.origin ol,.origin ul{margin:0;padding-left:0;list-style:none}
+.origin li{padding:7px 0;border-top:1px dashed var(--line);display:flex;gap:14px;font-size:.97rem;line-height:1.6}
+.origin li:first-child{border-top:0}
+.origin li code{flex:none;align-self:flex-start;margin-top:3px;color:var(--trace);font-family:var(--mono);font-size:.88rem;padding-top:2px}
+.origin p{margin:0;font-size:.95rem;color:var(--ink-soft)}
+.origin p+p{margin-top:8px}
+
+.topic{margin:0 0 40px;max-width:44em}
+.topic h3{font-size:1.22rem;font-weight:700;line-height:1.5;margin:0 0 10px;padding-left:14px;border-left:4px solid var(--trace)}
+.topic h4{font-size:1rem;font-weight:700;margin:22px 0 6px}
+.topic p{margin:0 0 14px}
+.topic ul,.topic ol{margin:0 0 16px;padding-left:1.3em}
+.topic li{margin-bottom:6px}
+.topic li::marker{color:var(--trace)}
+.tag{font-size:.78rem;font-weight:500;color:var(--trace);background:var(--trace-soft);padding:2px 8px;border-radius:3px;margin-left:8px;vertical-align:middle;white-space:nowrap}
+
+code{font-family:var(--mono);font-size:.88em;background:var(--trace-soft);padding:1px 6px;border-radius:3px;word-break:break-word}
+pre{
+  background:var(--code-bg);color:var(--code-ink);padding:16px 18px;margin:0 0 18px;
+  overflow-x:auto;font-size:.84rem;line-height:1.7;border-radius:4px;
+}
+pre code{background:none;padding:0;font-size:inherit;color:inherit;word-break:normal}
+.cm{color:#8FA6C4}
+
+.scroll{overflow-x:auto;margin:0 0 18px}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.92rem;line-height:1.6}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font-weight:700;border-bottom:2px solid var(--ink);white-space:nowrap}
+
+.todo{background:var(--amber-soft);padding:14px 18px;margin:0 0 18px;font-size:.95rem}
+.todo b{color:var(--amber)}
+
+footer{border-top:2px solid var(--ink);padding:28px 0 56px;font-size:.88rem;color:var(--ink-soft)}
+footer p{margin:0 0 8px;max-width:48em}
+
+/* ---------- 單元收合 ---------- */
+.topic h3{position:relative}
+.js .topic h3{cursor:pointer;padding-right:34px;-webkit-tap-highlight-color:transparent}
+.js .topic h3::after{
+  content:"";position:absolute;right:6px;top:.62em;width:9px;height:9px;
+  border-right:2px solid var(--trace);border-bottom:2px solid var(--trace);
+  transform:rotate(-135deg);transition:transform .15s;
+}
+.js .topic.shut h3::after{transform:rotate(45deg);top:.4em}
+.js .topic.shut>*:not(h3){display:none}
+.js .topic.shut{margin-bottom:14px}
+.js .topic.shut h3{margin-bottom:0}
+.topic h3:focus-visible{outline:3px solid var(--trace);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){.js .topic h3::after{transition:none}}
+.origin li a{color:inherit;text-decoration:none;display:flex;gap:14px;width:100%;min-width:0}
+.origin li a span{min-width:0}
+.origin li a:hover span,.origin li a:focus-visible span{text-decoration:underline}
+.tools{display:flex;gap:8px;margin:18px 0 0}
+.tools button{
+  font:inherit;font-size:.88rem;color:var(--ink);background:var(--panel);
+  border:1px solid var(--line);border-radius:4px;padding:8px 14px;cursor:pointer;
+}
+.tools button:focus-visible{outline:3px solid var(--trace);outline-offset:2px}
+.nav a.on{border-color:var(--trace);color:var(--trace)}
+@media (min-width:960px){.nav a.on{border-color:transparent;border-left-color:var(--trace)}}
+.totop{
+  position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:6;
+  width:46px;height:46px;border-radius:50%;border:0;background:var(--ink);color:var(--paper);
+  font-size:1.2rem;line-height:1;cursor:pointer;display:none;
+}
+.totop.show{display:block}
+.totop:focus-visible{outline:3px solid var(--trace);outline-offset:3px}
+
+/* ---------- 手機版 ---------- */
+@media (max-width:640px){
+  body{font-size:16px;line-height:1.8}
+  .shell{padding:0 16px}
+  .nav{margin:0 -16px;padding:0 16px}
+  .nav a{padding:9px 14px;font-size:.92rem}
+  .masthead{padding:32px 0 28px}
+  .masthead h1{font-size:1.75rem;line-height:1.3}
+  .facts{gap:4px 18px}
+  .path{margin-top:28px}
+  .path li{font-size:.95rem;padding-bottom:14px}
+  .chapter{padding:40px 0 4px}
+  .chapter>h2{font-size:1.4rem}
+  .origin{padding:14px 16px 16px;margin-bottom:28px}
+  .origin li{gap:10px;font-size:.95rem;padding:10px 0}
+  .origin li a{gap:10px}
+  .topic{margin-bottom:30px}
+  .topic h3{font-size:1.08rem;padding-left:12px}
+  .tag{display:none}
+  .notice,.todo{padding:14px 16px}
+  /* 程式碼：自動換行，不必左右滑 */
+  pre{
+    white-space:pre-wrap;overflow-wrap:anywhere;font-size:.8rem;line-height:1.65;
+    padding:14px;margin-left:-16px;margin-right:-16px;border-radius:0;
+  }
+  code{font-size:.85em}
+  /* 表格：每列變成一張卡，欄名顯示在左 */
+  .scroll{overflow:visible}
+  table{min-width:0;display:block;font-size:.93rem}
+  thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+  tbody,tr,td{display:block}
+  tr{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--trace);padding:10px 14px;margin-bottom:10px}
+  td{border:0;padding:3px 0}
+  td[data-label]::before{
+    content:attr(data-label);display:block;font-size:.78rem;font-weight:700;color:var(--ink-soft);
+  }
+  td:empty{display:none}
+  td:first-child{font-weight:700}
+  td code{word-break:break-all}
+  footer{padding-bottom:88px}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<header class="masthead">
+  <h1>Claude Code 深度應用：章節整理與補充講義</h1>
+  <p>依 HiSKIO 課程「Claude Code 深度應用：打造 AI 時代百倍產能的工程師工作流」的五個章節整理，並為每一章補上概念說明、指令、設定範例與練習方向。講師為蔡昇祐 Sam（矽谷叔叔）。</p>
+  <ul class="facts">
+    <li><b>5</b> 章</li>
+    <li><b>51</b> 單元</li>
+    <li><b>6.4</b> 小時</li>
+    <li>程度 <b>中階</b></li>
+    <li>需訂閱 <b>Claude Pro</b> 以使用 CLI</li>
+  </ul>
+
+  <div class="path" aria-label="課程示範的引導流程">
+    <h2>課程頁描述的引導流程：老師怎麼帶 Claude Code 完成一個功能</h2>
+    <ol>
+      <li>分析<span>讀懂專案與需求</span></li>
+      <li>規劃<span>先出計畫再動手</span></li>
+      <li>分工<span>拆任務、派 Agent</span></li>
+      <li>生成<span>產出程式碼</span></li>
+      <li>評估<span>Review 產出</span></li>
+      <li>測試<span>自動化驗證</span></li>
+    </ol>
+  </div>
+  <div class="tools" hidden>
+    <button type="button" id="openAll">全部展開</button>
+    <button type="button" id="shutAll">全部收合</button>
+  </div>
+</header>
+
+<div class="layout">
+
+<nav class="nav" aria-label="章節導覽">
+  <ul>
+    <li><a href="#ch1"><b>第 1 章</b>為什麼會改變工作方式</a></li>
+    <li><a href="#ch2"><b>第 2 章</b>核心工作流</a></li>
+    <li><a href="#ch3"><b>第 3 章</b>MCP 擴充</a></li>
+    <li><a href="#ch4"><b>第 4 章</b>Hook 與多 Agent</a></li>
+    <li><a href="#ch5"><b>第 5 章</b>團隊導入與成本</a></li>
+    <li><a href="#cheatsheet"><b>附錄</b>指令速查</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<div class="notice">
+  <strong>資料來源說明：</strong>五章共 51 個單元標題都來自課程頁（第 1 章取自網頁，其餘取自頁面截圖；3-5 的標題在截圖中被截斷，依 3-4 推定為 macOS 版）。每章的「課程頁資料」區塊是頁面原有資訊；標示「補充」的內容是依單元標題與 Claude Code 官方功能獨立整理，不是課程的逐字內容，實際講法與範例以課程為準。
+</div>
+
+<!-- ======================= 第 1 章 ======================= -->
+<section class="chapter" id="ch1">
+  <p class="ch-num">chapter 01</p>
+  <h2>為什麼 Claude Code 會改變工程師的工作方式？</h2>
+  <p class="ch-meta">共 6 單元，試閱影片約 29 分鐘（1-1、1-2、1-4、1-5 開放試閱）</p>
+
+  <div class="origin">
+    <h3>課程頁資料：單元列表</h3>
+    <ol>
+      <li><code>1-1</code>Claude Code 是什麼？6 分鐘理解 Coding Agent 能替你做什麼工作（05:48）</li>
+      <li><code>1-2</code>Claude Code 的設計理念：為什麼它和傳統 AI 工具不同（09:14）</li>
+      <li><code>1-3</code>Claude Code 安裝與環境準備（Windows）</li>
+      <li><code>1-4</code>Claude Code 安裝與環境準備（macOS）（06:32）</li>
+      <li><code>1-5</code>Claude Code × VS Code：10 分鐘完成遊戲開發（07:31）</li>
+      <li><code>1-6</code>【作業】遊戲機制擴充：加入超級食物與穿牆模式</li>
+    </ol>
+  </div>
+
+  <div class="topic">
+    <h3>1-1 Coding Agent 到底替你做什麼<span class="tag">補充</span></h3>
+    <p>聊天式 AI 給你一段程式碼，剩下的整合、執行、除錯還是你做。Coding Agent 的差別在於它自己跑完一個迴圈：蒐集脈絡、採取行動、驗證結果，不對就再來一輪。</p>
+    <ul>
+      <li><b>蒐集脈絡：</b>用搜尋與讀檔工具自己找出相關檔案，不需要你逐個貼上。</li>
+      <li><b>採取行動：</b>直接改檔、建檔、在你的終端機執行指令（編譯、跑測試、git 操作）。</li>
+      <li><b>驗證結果：</b>讀取編譯錯誤或測試輸出，據此修正。</li>
+    </ul>
+    <p>適合交出去的工作：熟悉陌生 codebase、實作定義清楚的功能、修有重現步驟的 bug、補測試、重構、寫 commit 與 PR 描述。需要你把關的部分：需求是否正確、架構取捨、以及任何不可逆的操作。</p>
+  </div>
+
+  <div class="topic">
+    <h3>1-2 設計理念：和其他 AI 工具差在哪<span class="tag">補充</span></h3>
+    <p>試閱影片的檔名顯示這個單元拿 Copilot 與 Jules 做比較。三類工具的定位可以這樣分：</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>類型</th><th>代表</th><th>運作位置</th><th>你的角色</th></tr></thead>
+      <tbody>
+        <tr><td>行內補全</td><td>GitHub Copilot 補全</td><td>編輯器游標處</td><td>你寫，AI 接話</td></tr>
+        <tr><td>雲端非同步 Agent</td><td>Google Jules</td><td>遠端 VM，交付 PR</td><td>派工後等結果</td></tr>
+        <tr><td>本地終端 Agent</td><td>Claude Code</td><td>你的機器、你的 shell</td><td>即時協作、隨時打斷</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>Claude Code 的幾個設計選擇：</p>
+    <ul>
+      <li><b>活在終端機：</b>你的工具鏈（編譯器、測試、git、部署腳本）它都能直接用，不必另外整合。</li>
+      <li><b>低階、不預設流程：</b>它給的是原始能力，工作流由你用 CLAUDE.md、指令、Hook、Sub-Agent 組出來。這也是整門課後四章的主線。</li>
+      <li><b>可組合：</b>遵循 Unix 哲學，<code>claude -p</code> 可接在 pipe 裡、放進腳本或 CI。</li>
+      <li><b>權限預設保守：</b>改檔與執行指令前會詢問，由你逐步放寬。</li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3>1-3、1-4 安裝與環境準備<span class="tag">補充</span></h3>
+    <h4>macOS / Linux / WSL</h4>
+<pre><code><span class="cm"># 官方原生安裝程式</span>
+curl -fsSL https://claude.ai/install.sh | bash
+
+<span class="cm"># 或用 Homebrew</span>
+brew install --cask claude-code</code></pre>
+    <h4>Windows</h4>
+<pre><code><span class="cm"># PowerShell 原生安裝（需先裝 Git for Windows）</span>
+irm https://claude.ai/install.ps1 | iex</code></pre>
+    <p>Windows 也可以走 WSL，在 Linux 環境裡用上面的 curl 指令安裝；專案本來就在 Linux 工具鏈上的話，WSL 通常比較省事。</p>
+    <h4>安裝後檢查</h4>
+<pre><code>claude --version   <span class="cm"># 確認版本</span>
+claude doctor      <span class="cm"># 檢查安裝狀態</span>
+cd your-project
+claude             <span class="cm"># 首次啟動會引導登入（/login）</span></code></pre>
+    <p>課程 FAQ 說明需要 Claude Pro 訂閱（月費 20 美元，以官方公告為準）才能使用 CLI；也可以改用 API key 按量計費。</p>
+  </div>
+
+  <div class="topic">
+    <h3>1-5 Claude Code × VS Code：第一個專案<span class="tag">補充</span></h3>
+    <p>試閱影片檔名顯示示範專案是貪食蛇。VS Code 擴充套件提供側邊面板、行內 diff 檢視、把目前選取的程式碼自動帶進脈絡，底層跑的仍是同一個 Claude Code。</p>
+    <p>第一個 prompt 的寫法決定成敗。與其說「做一個貪食蛇」，不如把驗收條件講清楚：</p>
+<pre><code>用單一 index.html（原生 JS + Canvas）做貪食蛇：
+- 20x20 格，方向鍵控制，不可直接反向
+- 吃到食物 +10 分、身體 +1、速度略增
+- 撞牆或撞到自己就結束，顯示分數與「重新開始」
+- 完成後告訴我怎麼在本機打開測試</code></pre>
+  </div>
+
+  <div class="topic">
+    <h3>1-6 作業：超級食物與穿牆模式<span class="tag">補充</span></h3>
+    <p>這份作業練的是「在既有程式碼上迭代」，和從零生成是不同的技能。建議做法：</p>
+    <ol>
+      <li>先請 Claude 讀現有程式並說明遊戲主迴圈與碰撞判定在哪裡，確認它看懂。</li>
+      <li>把規則寫成可驗收的條件：超級食物多久出現一次、存在幾秒、加幾分、長什麼樣；穿牆模式怎麼切換、從左邊出去是否從右邊同一列進來。</li>
+      <li>一次只加一個機制，測過、commit，再做下一個。</li>
+      <li>留意邊界：穿牆時食物生成位置、穿牆瞬間的自撞判定、兩個機制同時生效的情況。</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 第 2 章 ======================= -->
+<section class="chapter" id="ch2">
+  <p class="ch-num">chapter 02</p>
+  <h2>Claude Code 核心工作流：從好用到可控</h2>
+  <p class="ch-meta">共 15 單元，全課程最大的一章</p>
+
+  <div class="origin">
+    <h3>課程頁資料：單元列表</h3>
+    <ol>
+      <li><code>2-1</code>Claude Code 核心能力總覽：常用指令與使用情境</li>
+      <li><code>2-2</code>【INIT】CLAUDE.md 初始化：讓 Claude 一開始就懂你的專案</li>
+      <li><code>2-3</code>【@FILE】檔案參照：用正確 Context 取代冗長 Prompt</li>
+      <li><code>2-4</code>【IMAGE】圖片輸入：把視覺資訊納入開發流程</li>
+      <li><code>2-5</code>【作業】新功能開發：用一句 Prompt，讓滑鼠移到寶箱時變成鑰匙圖示</li>
+      <li><code>2-6</code>【COMPACT】Context 進階管理 I：濃縮重點，避免 Context 爆炸</li>
+      <li><code>2-7</code>【REWIND】Context 進階管理 II：回到完美的那一刻</li>
+      <li><code>2-8</code>【RESUME】別讓上下文消失：把每一次對話變成資產</li>
+      <li><code>2-9</code>【PLAN MODE】計畫模式：先對齊思路，再動手寫 code</li>
+      <li><code>2-10</code>【ULTRA THINK】深度推理模式：處理複雜問題的正確方式</li>
+      <li><code>2-11</code>【AUTO MEMORY】Claude Code 的 Cross-Session 記憶</li>
+      <li><code>2-12</code>【Custom Command】一鍵完成 Vercel 雲端部署</li>
+      <li><code>2-13</code>【作業】【Custom Command】一鍵部署到 GitHub Pages</li>
+      <li><code>2-14</code>【示範】Custom Command 實作：一鍵部署到 GitHub Pages</li>
+      <li><code>2-15</code>【Goal &amp; Loop】長期任務指派：讓 Claude Code 自己跑到完成</li>
+    </ol>
+  </div>
+
+  <div class="topic">
+    <h3>2-1 核心能力總覽：常用指令與使用情境<span class="tag">補充</span></h3>
+    <p>Claude Code 的操作介面只有三種輸入：自然語言、斜線指令、快捷鍵。先記住依情境分組的這幾個就夠用：</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>情境</th><th>指令或按鍵</th></tr></thead>
+      <tbody>
+        <tr><td>剛進一個專案</td><td><code>/init</code>、<code>/memory</code>、<code>/permissions</code></td></tr>
+        <tr><td>給脈絡</td><td><code>@路徑</code>、貼上圖片</td></tr>
+        <tr><td>控制節奏</td><td><code>Shift+Tab</code> 切換模式、<code>Esc</code> 打斷</td></tr>
+        <tr><td>管理脈絡</td><td><code>/context</code>、<code>/compact</code>、<code>/clear</code>、<code>/rewind</code></td></tr>
+        <tr><td>接續工作</td><td><code>claude -c</code>、<code>claude -r</code>、<code>/resume</code></td></tr>
+        <tr><td>不知道有什麼</td><td><code>/help</code>，或輸入 <code>/</code> 看清單</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>另外兩個前綴：<code>!</code> 開頭直接執行 shell 指令並把輸出帶進對話；<code>#</code> 開頭可把一句話快速記進 CLAUDE.md（新版行為可能調整，以 <code>/help</code> 為準）。</p>
+    <p>使用情境大致四類：問 codebase 問題（「登入流程從哪裡開始？」）、改程式、跑指令與除錯、git 操作。第一類最被低估，進陌生專案先問問題，比直接叫它改安全得多。</p>
+  </div>
+
+  <div class="topic">
+    <h3>2-2 【INIT】CLAUDE.md 初始化<span class="tag">補充</span></h3>
+    <p><code>/init</code> 會掃描專案後產生 CLAUDE.md 初版。這份檔案在每次對話開始時自動載入，等於專案的「到職說明」。用 <code>/memory</code> 檢視與編輯。</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>位置</th><th>範圍</th><th>放什麼</th></tr></thead>
+      <tbody>
+        <tr><td><code>./CLAUDE.md</code></td><td>專案，進 git 與團隊共用</td><td>建置與測試指令、目錄結構、程式風格、禁區</td></tr>
+        <tr><td><code>./CLAUDE.local.md</code></td><td>專案，僅自己</td><td>個人測試環境、本機路徑</td></tr>
+        <tr><td><code>~/.claude/CLAUDE.md</code></td><td>你的所有專案</td><td>個人偏好，例如回覆語言、commit 風格</td></tr>
+      </tbody>
+    </table>
+    </div>
+<pre><code># CLAUDE.md 範例
+## 指令
+- 建置：npm run build
+- 單一測試：npm test -- path/to/file.test.ts
+- 改完程式一律跑 npm run typecheck
+
+## 架構
+- src/api 是 Express 路由，src/db 是 Prisma，src/web 是 React
+- 詳細 API 規格見 @docs/api-spec.md
+
+## 規則
+- 不要修改 migrations/ 下已存在的檔案
+- 新功能必須附測試</code></pre>
+    <p><code>/init</code> 產生的內容只是起點，通常偏長偏泛，要自己刪改。原則：短、具體、可檢查。每一行都佔脈絡，「保持程式碼整潔」這類句子沒有作用。之後發現 Claude 重複犯同一個錯，就補一條規則。</p>
+  </div>
+
+  <div class="topic">
+    <h3>2-3 【@FILE】檔案參照：用 Context 取代冗長 Prompt<span class="tag">補充</span></h3>
+    <p>與其用三段文字描述「那個處理登入的檔案裡的驗證邏輯」，不如直接指給它看。<code>@</code> 後面接路徑，支援 Tab 補全，檔案內容會直接進入對話。</p>
+<pre><code><span class="cm"># 冗長又不精確</span>
+幫我做登出功能，風格要跟登入一樣，登入在 auth 資料夾裡面那個...
+
+<span class="cm"># 用參照</span>
+參考 @src/auth/login.ts 的結構與錯誤處理，實作 logout，
+路由加在 @src/routes/auth.ts</code></pre>
+    <ul>
+      <li><code>@目錄/</code> 帶入的是目錄列表，不是所有檔案內容。</li>
+      <li>參照的檔案若所在目錄有自己的 CLAUDE.md，也會一併載入。</li>
+      <li>只參照需要的。一次丟十個檔案，等於沒有指路。</li>
+      <li>範本效果最好：「照 @某檔 的模式寫」比任何文字描述的風格要求都可靠。</li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3>2-4 【IMAGE】圖片輸入<span class="tag">補充</span></h3>
+    <p>輸入方式：把圖檔拖進終端機、用 <code>Ctrl+V</code> 貼上剪貼簿的圖（macOS 也是 Ctrl 不是 Cmd），或直接給圖檔路徑。</p>
+    <p>值得用圖的情況：</p>
+    <ul>
+      <li><b>設計稿轉實作：</b>貼 Figma 截圖，請它照著切版。</li>
+      <li><b>視覺 bug：</b>「按鈕跑版了」不如一張截圖。</li>
+      <li><b>錯誤畫面：</b>瀏覽器 console、手機上的錯誤訊息。</li>
+      <li><b>圖表與架構圖：</b>白板照片、ER diagram、時序圖。</li>
+      <li><b>前後對照：</b>改完後再截一張貼回去，請它比對設計稿找差異。</li>
+    </ul>
+    <p>圖片也佔脈絡，裁切到相關區域再貼。第 3 章的 Playwright MCP 則是讓它自己截圖，把這個迴圈自動化。</p>
+  </div>
+
+  <div class="topic">
+    <h3>2-5 作業：滑鼠移到寶箱時變成鑰匙圖示<span class="tag">補充</span></h3>
+    <p>題目強調「用一句 Prompt」，練的是 2-3 與 2-4 的組合：脈絡給對了，prompt 就可以很短。</p>
+<pre><code>滑鼠移到 @src/components/TreasureChest.tsx 的寶箱上時，
+游標改用 @assets/key.png，離開時恢復。</code></pre>
+    <p>這句話能成立，是因為兩個 <code>@</code> 已經把「改哪裡」和「用什麼」講完了。技術上通常是 CSS 的 <code>cursor: url(key.png) x y, pointer</code>，要注意的細節：</p>
+    <ul>
+      <li>游標圖檔尺寸建議 32×32，過大瀏覽器會忽略。</li>
+      <li>url 後面的兩個數字是熱點座標（鑰匙尖端對準的位置），以及一定要有後備值如 <code>pointer</code>。</li>
+      <li>若寶箱畫在 Canvas 裡而非 DOM 元素，就得在 mousemove 做命中判定後切換 canvas 的 cursor 樣式。</li>
+    </ul>
+    <p>做完貼截圖請 Claude 確認，順便練 2-4。</p>
+  </div>
+
+  <div class="topic">
+    <h3>2-6 【COMPACT】濃縮重點，避免 Context 爆炸<span class="tag">補充</span></h3>
+    <p>脈絡視窗有上限，而且每次請求都會重送整段對話。對話越長，越慢、越貴，前面的指示也越容易被稀釋。</p>
+    <ul>
+      <li><code>/context</code>：先看視窗被什麼佔用（系統提示、MCP 工具、CLAUDE.md、對話）。</li>
+      <li><code>/compact</code>：把歷史對話摘要成重點後繼續。可以附指示：<br><code>/compact 保留資料表設計的決定與尚未完成的三個 TODO</code></li>
+      <li><code>/clear</code>：整個清空。換到不相關的任務時用這個，不要用 compact。</li>
+      <li>接近上限時會自動壓縮，但自動摘要不知道什麼對你重要，所以在任務告一段落的自然斷點主動 compact 比較好。</li>
+    </ul>
+    <p>更穩的做法是把重要決定寫進檔案（規格、進度 markdown），讓它不依賴對話記憶。摘要會丟細節，檔案不會。</p>
+  </div>
+
+  <div class="topic">
+    <h3>2-7 【REWIND】回到完美的那一刻<span class="tag">補充</span></h3>
+    <p>Claude Code 在你每次送出 prompt 時建立 checkpoint，並在每次改檔前快照。連按兩次 <code>Esc</code> 或輸入 <code>/rewind</code>，選擇要回到哪一則訊息，可以還原：</p>
+    <ul>
+      <li>只還原程式碼（保留對話，讓它知道剛剛走錯了）</li>
+      <li>只還原對話（保留程式碼，把走偏的討論丟掉）</li>
+      <li>兩者一起</li>
+    </ul>
+    <p>它同時是脈絡管理工具：一段失敗的嘗試留在對話裡會持續干擾後續判斷，rewind 掉比叫它「忘記剛剛那個」乾淨。</p>
+    <div class="todo"><b>限制：</b>checkpoint 只追蹤 Claude 用編輯工具改的檔案，不追蹤 Bash 指令造成的變更（刪檔、migration、套件安裝），也只存在於該工作階段。它不能取代 git，每完成一個可運作的階段就 commit。</div>
+  </div>
+
+  <div class="topic">
+    <h3>2-8 【RESUME】把每一次對話變成資產<span class="tag">補充</span></h3>
+    <p>對話紀錄依專案目錄存在本機，關掉終端機不會消失。</p>
+<pre><code>claude -c          <span class="cm"># --continue：接續這個目錄最近一次對話</span>
+claude -r          <span class="cm"># --resume：從清單挑選歷史對話</span>
+/resume            <span class="cm"># 在對話中切換到其他歷史對話</span></code></pre>
+    <ul>
+      <li>接續時完整歷史都會載回來，包含當時的工具呼叫結果。</li>
+      <li>一個任務一個對話，並用 <code>/rename</code> 取個認得出來的名字，之後才找得到。</li>
+      <li>適合接續的情況：昨天做到一半的功能、等 CI 結果回來後繼續修。</li>
+      <li>不適合的情況：對話已經很長很亂。這時請它把現況寫成交接筆記，開新對話用 <code>@</code> 讀進來，比拖著舊脈絡有效。</li>
+    </ul>
+    <p>真正能累積成「資產」的是沉澱出來的東西：對話中發現的規則寫回 CLAUDE.md，重複的流程做成 Skill（第 4 章）。</p>
+  </div>
+
+  <div class="topic">
+    <h3>2-9 【PLAN MODE】先對齊思路，再動手寫 code<span class="tag">補充</span></h3>
+    <p>按 <code>Shift+Tab</code> 循環切換到 Plan Mode（或用 <code>/plan</code>）。此模式下 Claude 只能讀、不能改檔或執行有副作用的指令，它研究 codebase 後提出計畫，你核可才開始實作。</p>
+    <ol>
+      <li><b>探索：</b>請它讀相關檔案，先不要寫程式。</li>
+      <li><b>規劃：</b>產出計畫。在這一步修正方向成本最低，直接回覆要改哪裡即可。</li>
+      <li><b>實作：</b>照計畫執行，要求邊做邊驗證。</li>
+      <li><b>提交：</b>請它寫 commit 與 PR 描述。</li>
+    </ol>
+    <p>審計畫時看三件事：它打算動哪些檔案（範圍是否超出預期）、有沒有誤解需求、打算怎麼驗證。跳過規劃直接叫它寫，是「能生成但跑不起來」最常見的原因。單行修改、改錯字這類小事則不需要。</p>
+  </div>
+
+  <div class="topic">
+    <h3>2-10 【ULTRA THINK】深度推理模式<span class="tag">補充</span></h3>
+    <p>做法是在 prompt 裡加入 think、think hard、ultrathink 這類字眼，讓模型在回答前花更多推理預算。較新的版本改以 <code>/effort</code> 與模型設定調整推理量，關鍵字的行為在版本間變動過，請以你安裝的版本為準。</p>
+    <p>適合深度推理的問題：</p>
+    <ul>
+      <li>架構決策與多方案取捨</li>
+      <li>難重現的 bug：race condition、記憶體問題、跨模組的狀態錯亂</li>
+      <li>牽涉多個檔案的重構或 migration 規劃</li>
+      <li>安全性與邊界條件審查</li>
+    </ul>
+    <p>和 Plan Mode 搭配效果最好：在規劃階段深想，實作階段不必。改名、補樣板這類工作開深度推理只是多花時間與 token。</p>
+  </div>
+
+  <div class="topic">
+    <h3>2-11 【AUTO MEMORY】Cross-Session 記憶<span class="tag">補充</span></h3>
+    <p>CLAUDE.md 是你寫給 Claude 的；Auto Memory 是 Claude 自己寫給未來的自己的筆記。它在工作中學到的東西（建置指令的坑、你糾正過它的事、除錯心得）會自動存成 markdown，下次在同一個專案開新對話時載入。</p>
+    <ul>
+      <li>存放位置在個人目錄下、依專案分開（<code>~/.claude/projects/&lt;專案&gt;/memory/</code>），不進 git，只屬於你這台機器。</li>
+      <li>入口檔 <code>MEMORY.md</code> 的開頭部分會在每次對話載入，其餘主題檔按需讀取。</li>
+      <li>用 <code>/memory</code> 可以瀏覽、編輯、開關這項功能。它就是純文字檔，寫錯了直接改或刪。</li>
+      <li>也可以明說：「記住：這個專案的整合測試要先啟動 docker compose」。</li>
+    </ul>
+    <div class="scroll">
+    <table>
+      <thead><tr><th></th><th>CLAUDE.md</th><th>Auto Memory</th><th>Resume</th></tr></thead>
+      <tbody>
+        <tr><td>誰寫</td><td>你與團隊</td><td>Claude</td><td>系統自動存</td></tr>
+        <tr><td>內容</td><td>規則與慣例</td><td>學到的經驗</td><td>完整對話</td></tr>
+        <tr><td>共用</td><td>進 git</td><td>僅本機</td><td>僅本機</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>定期翻一下記憶檔。值得全隊知道的內容搬進 CLAUDE.md，過時的刪掉，錯誤的記憶會一直誤導後續對話。</p>
+  </div>
+
+  <div class="topic">
+    <h3>2-12 【Custom Command】一鍵完成 Vercel 雲端部署<span class="tag">補充</span></h3>
+    <p>重複下的 prompt 就該存成指令。在 <code>.claude/commands/</code> 放一個 markdown 檔，檔名就是指令名稱；放在專案裡是團隊共用，放在 <code>~/.claude/commands/</code> 是個人全域。</p>
+<pre><code><span class="cm">&lt;!-- .claude/commands/deploy-vercel.md --&gt;</span>
+---
+description: 檢查、建置並部署到 Vercel
+argument-hint: [preview|prod]
+allowed-tools: Bash(npm run:*), Bash(vercel:*), Bash(git status)
+---
+目前 git 狀態：!`git status --short`
+
+部署目標：$ARGUMENTS（未指定則為 preview）
+
+步驟：
+1. 若有未提交的變更，先停下來問我
+2. 執行 npm run lint 與 npm run build，失敗就修正後重試
+3. prod 用 `vercel --prod`，否則用 `vercel`
+4. 回報部署網址，並用 curl 確認首頁回應 200</code></pre>
+    <p>之後輸入 <code>/deploy-vercel prod</code> 即可。幾個語法：<code>$ARGUMENTS</code> 是指令後面的文字（也可用 <code>$1</code>、<code>$2</code>）；<code>!`指令`</code> 會先執行並把輸出嵌入 prompt；<code>allowed-tools</code> 讓這個指令內的特定操作免確認。</p>
+    <p>前置作業：<code>npm i -g vercel</code> 後先手動 <code>vercel login</code> 與 <code>vercel link</code> 一次，環境變數在 Vercel 後台設定。</p>
+  </div>
+
+  <div class="topic">
+    <h3>2-13、2-14 作業與示範：一鍵部署到 GitHub Pages<span class="tag">補充</span></h3>
+    <p>GitHub Pages 只能放靜態檔，適合純前端專案。和 Vercel 的差異在於要自己處理「建置產物放哪裡」。兩種常見做法：</p>
+    <ul>
+      <li><b>gh-pages 分支：</b><code>npx gh-pages -d dist</code> 把建置結果推到 gh-pages 分支，repo 設定裡選該分支為來源。最簡單，適合作業。</li>
+      <li><b>GitHub Actions：</b>push 到 main 自動建置部署，適合長期維護。</li>
+    </ul>
+<pre><code><span class="cm">&lt;!-- .claude/commands/deploy-pages.md --&gt;</span>
+---
+description: 建置並部署到 GitHub Pages
+allowed-tools: Bash(npm run:*), Bash(npx gh-pages:*), Bash(git:*), Bash(gh:*)
+---
+repo 資訊：!`gh repo view --json nameWithOwner,url`
+
+1. 確認工作目錄乾淨、目前在 main
+2. 檢查建置設定的 base 路徑是否為 /&lt;repo 名稱&gt;/，不對就修正
+3. npm run build
+4. npx gh-pages -d dist
+5. 回報 Pages 網址，等一分鐘後確認可以開啟</code></pre>
+    <p>最常踩的坑是第 2 步：Pages 網址是 <code>使用者.github.io/repo名/</code>，Vite 要設 <code>base</code>、CRA 要設 <code>homepage</code>，否則部署後整頁空白、資源 404。SPA 的前端路由重新整理會 404，需要複製一份 <code>index.html</code> 為 <code>404.html</code>。把這些寫進指令，就不必每次重新踩。</p>
+  </div>
+
+  <div class="topic">
+    <h3>2-15 【Goal &amp; Loop】長期任務指派：讓 Claude Code 自己跑到完成<span class="tag">補充</span></h3>
+    <p>預設情況下 Claude 做完一輪就停下等你。這兩個指令改變這一點（需要較新的版本，<code>/loop</code> 約 v2.1.72 起、<code>/goal</code> 約 v2.1.139 起）：</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th></th><th><code>/goal</code></th><th><code>/loop</code></th></tr></thead>
+      <tbody>
+        <tr><td>驅動方式</td><td>條件：達成才停</td><td>時間：每隔一段時間再跑一次</td></tr>
+        <tr><td>機制</td><td>每回合結束由一個快速模型判斷條件是否成立，未成立就繼續</td><td>依間隔重複執行同一個 prompt；不給間隔則由 Claude 自行決定</td></tr>
+        <tr><td>適合</td><td>遷移模組直到測試全過、照設計文件實作到驗收條件滿足</td><td>輪詢部署狀態、盯 PR 的新 review、看長時間建置</td></tr>
+      </tbody>
+    </table>
+    </div>
+<pre><code>/goal src/legacy 下所有檔案改用新的 logger，且 npm test 全數通過，或 20 回合後停止
+
+/loop 5m 檢查 CI 狀態，失敗就讀 log 並修正</code></pre>
+    <ul>
+      <li>完成條件要能在對話紀錄中被證明（測試輸出、指令結果）。寫不出怎麼證明，就代表條件太模糊。</li>
+      <li>一定要加回合數或時間上限，達不成的目標否則會一直燒 token。</li>
+      <li><code>/loop</code> 只在工作階段開著時運作，且有自動到期期限。</li>
+      <li>放手前先設好權限（allow 常用指令、deny 危險操作）並在獨立分支上跑。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ======================= 第 3 章 ======================= -->
+<section class="chapter" id="ch3">
+  <p class="ch-num">chapter 03</p>
+  <h2>Claude Code × MCP：打造可擴充的 AI 開發系統</h2>
+  <p class="ch-meta">共 13 單元，主線專案 Toy Marketplace 從這章開始</p>
+
+  <div class="origin">
+    <h3>課程頁資料：單元列表</h3>
+    <ol>
+      <li><code>3-1</code>Claude Code 工具角色分工：MCP、Built-in Tools、Local CLI</li>
+      <li><code>3-2</code>MCP 是什麼？讓 Claude Code 接上外部工具的關鍵</li>
+      <li><code>3-3</code>【MCP Client】Claude Code 如何連接 MCP Server：三種設定方式</li>
+      <li><code>3-4</code>實戰專案啟動：Toy Marketplace 全端環境建置 (Windows)</li>
+      <li><code>3-5</code>實戰專案啟動：Toy Marketplace 全端環境建置 (macOS)</li>
+      <li><code>3-6</code>【MCP Server】Playwright：用 AI 自動測試整個 Web App</li>
+      <li><code>3-7</code>【作業】【MCP Server】Playwright：AI 自動完成購買流程測試</li>
+      <li><code>3-8</code>【MCP Server】Context7：用官方文件消除 AI 幻覺</li>
+      <li><code>3-9</code>【MCP Server】Sentry：用 AI 監控 Web App 錯誤</li>
+      <li><code>3-10</code>【MCP Server】打造你的第一個客製化 MCP Server</li>
+      <li><code>3-11</code>【作業】【MCP Server】擴充客製化 MCP Server：實作圖片去背工具</li>
+      <li><code>3-12</code>MCP Workflow Deep Dive：Claude Code ↔ MCP Server 工作流解析</li>
+      <li><code>3-13</code>【MCP Server】客製化 MCP Server 實戰（SSE）：Icon Generator</li>
+    </ol>
+  </div>
+
+  <div class="topic">
+    <h3>3-1 工具角色分工：MCP、Built-in Tools、Local CLI<span class="tag">補充</span></h3>
+    <p>Claude Code 能「做事」靠的是三類工具，先分清楚才知道什麼時候真的需要 MCP。</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>類別</th><th>例子</th><th>特性</th></tr></thead>
+      <tbody>
+        <tr><td>內建工具</td><td>Read、Edit、Write、Grep、Glob、Bash、WebFetch、WebSearch、派工給 Sub-Agent</td><td>隨時可用，檔案與 shell 操作的基礎</td></tr>
+        <tr><td>本機 CLI</td><td><code>git</code>、<code>gh</code>、<code>docker</code>、<code>psql</code>、<code>aws</code>、<code>vercel</code></td><td>透過 Bash 呼叫，不佔工具定義的脈絡；Claude 對主流 CLI 很熟</td></tr>
+        <tr><td>MCP</td><td>Playwright、Context7、Sentry、自製 server</td><td>結構化輸入輸出、可帶認證與狀態；工具定義會佔脈絡</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>選擇順序：內建能做就用內建；有成熟 CLI 就用 CLI；需要持續狀態（開著的瀏覽器）、結構化資料、OAuth 登入，或根本沒有 CLI 的系統，才上 MCP。</p>
+  </div>
+
+  <div class="topic">
+    <h3>3-2 MCP 是什麼<span class="tag">補充</span></h3>
+    <p>Model Context Protocol 是開放協定，讓 AI 應用用統一方式連接外部工具與資料，常被比喻為 AI 的 USB-C。Claude Code 是 client，每個外部能力是一個 server，寫一次 server，所有支援 MCP 的 AI 應用都能用。</p>
+    <p>server 可以提供三種東西：</p>
+    <ul>
+      <li><b>Tools：</b>可呼叫的動作，例如點擊網頁、查詢錯誤、產生圖片。由模型決定何時呼叫。</li>
+      <li><b>Resources：</b>可讀取的資料，在 Claude Code 裡用 <code>@</code> 參照。</li>
+      <li><b>Prompts：</b>預寫好的提示範本，會以斜線指令形式出現。</li>
+    </ul>
+    <p>傳輸方式：本機程序走 stdio；遠端服務走 HTTP（Streamable HTTP，以及較舊的 SSE）。</p>
+  </div>
+
+  <div class="topic">
+    <h3>3-3 【MCP Client】連接 MCP Server 的設定方式<span class="tag">補充</span></h3>
+    <p>課程說的「三種」具體指哪三種我無法確認，以下是實務上的三條路徑：</p>
+    <h4>一、CLI 指令</h4>
+<pre><code><span class="cm"># 本機 stdio server：-- 後面是啟動指令</span>
+claude mcp add playwright -- npx -y @playwright/mcp@latest
+
+<span class="cm"># 遠端 server</span>
+claude mcp add --transport http sentry https://mcp.sentry.dev/mcp
+
+claude mcp list
+claude mcp remove &lt;名稱&gt;</code></pre>
+    <h4>二、直接編輯 JSON</h4>
+<pre><code><span class="cm">// 專案根目錄 .mcp.json，進 git 後全隊共用</span>
+{
+  "mcpServers": {
+    "playwright": { "command": "npx", "args": ["-y", "@playwright/mcp@latest"] },
+    "sentry":     { "type": "http", "url": "https://mcp.sentry.dev/mcp" }
+  }
+}</code></pre>
+    <h4>三、貼上或匯入既有設定</h4>
+<pre><code>claude mcp add-json &lt;名稱&gt; '&lt;JSON 字串&gt;'     <span class="cm"># 直接貼 server 文件提供的 JSON</span>
+claude mcp add-from-claude-desktop            <span class="cm"># 從 Claude Desktop 匯入</span></code></pre>
+    <h4>範圍（--scope）也是三種</h4>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>範圍</th><th>儲存位置</th><th>用途</th></tr></thead>
+      <tbody>
+        <tr><td>local（預設）</td><td>個人設定，限此專案</td><td>自己試用</td></tr>
+        <tr><td>project</td><td><code>.mcp.json</code></td><td>團隊共用</td></tr>
+        <tr><td>user</td><td>個人設定，所有專案</td><td>到處都用的工具</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>對話中用 <code>/mcp</code> 看連線狀態、處理 OAuth 登入。裝太多會吃脈絡：用 <code>/context</code> 檢查，用不到的就 remove。</p>
+  </div>
+
+  <div class="topic">
+    <h3>3-4、3-5 實戰專案啟動：Toy Marketplace 全端環境建置<span class="tag">補充</span></h3>
+    <p>課程專案的實際技術選型我不知道，以下是任何全端專案交給 Claude Code 前都該做的準備：</p>
+    <ol>
+      <li><b>環境能一鍵起來：</b>請 Claude 讀 README 後實際把前端、後端、資料庫跑起來，過程中遇到的問題就是文件缺漏，順手補上。</li>
+      <li><b>執行 <code>/init</code>：</b>把啟動、測試、migration、seed 資料的指令寫進 CLAUDE.md。</li>
+      <li><b>準備測試資料：</b>seed 腳本與測試帳號。3-7 的購買流程測試需要有商品、有可登入的使用者。</li>
+      <li><b>環境變數：</b>提供 <code>.env.example</code>，真正的 <code>.env</code> 不進 git，並在權限設定擋掉讀取。</li>
+      <li><b>commit 一個乾淨起點：</b>之後任何實驗都能回得來。</li>
+    </ol>
+    <p>Windows 常見問題：路徑分隔與換行符號（設 <code>git config core.autocrlf</code>）、PowerShell 執行原則擋腳本、連接埠被佔用。工具鏈偏 Linux 的專案建議直接在 WSL 裡開發，檔案也放在 WSL 檔案系統內，效能差很多。</p>
+  </div>
+
+  <div class="topic">
+    <h3>3-6 【MCP Server】Playwright：用 AI 自動測試整個 Web App<span class="tag">補充</span></h3>
+    <p>沒有瀏覽器，Claude 改前端是盲改。接上 Playwright MCP 後，它能開頁面、點擊、填表、讀 console 與網路請求、截圖，形成「改程式、開瀏覽器驗證、看到錯再修」的閉環。</p>
+    <ul>
+      <li>它主要透過頁面的 accessibility tree（無障礙樹）理解畫面，不是靠看截圖，所以又快又準。副作用：語意化的 HTML、有 label 的按鈕，AI 操作起來明顯更穩。</li>
+      <li>預設會開一個看得見的瀏覽器視窗，你可以看著它操作；需要登入的站可以先手動登入再交給它。</li>
+      <li>頁面快照很吃脈絡，長流程測試適合交給 Sub-Agent（第 4 章）跑，主對話只拿結論。</li>
+    </ul>
+<pre><code>dev server 已在 http://localhost:3000。用 playwright：
+1. 瀏覽首頁、商品列表、商品詳情，記錄任何 console error 與失敗的網路請求
+2. 把視窗縮到 375px 寬，檢查有沒有跑版
+3. 列出問題清單，先不要修，等我確認優先順序</code></pre>
+  </div>
+
+  <div class="topic">
+    <h3>3-7 作業：AI 自動完成購買流程測試<span class="tag">補充</span></h3>
+    <p>購買流程是電商最關鍵的路徑：登入、瀏覽、加入購物車、結帳、確認訂單。建議分兩階段：</p>
+    <ol>
+      <li><b>探索式：</b>讓 Claude 用 Playwright MCP 實際走一遍，回報每一步的結果與遇到的問題。</li>
+      <li><b>固化：</b>流程穩定後，請它把剛才的操作寫成 Playwright 測試檔，之後由 CI 執行，不再消耗 AI 用量。</li>
+    </ol>
+    <p>prompt 裡要給的資訊：測試帳號、要買哪個商品與數量、預期的金額或訂單狀態。除了成功路徑，也請它測庫存不足、未登入結帳、購物車清空後重新整理這幾個邊界。驗證不能只看畫面，請它同時查資料庫或 API 確認訂單真的寫入。</p>
+  </div>
+
+  <div class="topic">
+    <h3>3-8 【MCP Server】Context7：用官方文件消除 AI 幻覺<span class="tag">補充</span></h3>
+    <p>模型對函式庫的知識停在訓練當時。遇到新版 API 就會寫出已棄用的用法，甚至憑空編出不存在的函式。Context7 是 Upstash 維護的 MCP server，即時取回指定函式庫、指定版本的官方文件與範例，放進脈絡。</p>
+<pre><code>claude mcp add context7 -- npx -y @upstash/context7-mcp</code></pre>
+<pre><code>用 Next.js 15 的 App Router 實作商品列表的伺服器端分頁。use context7</code></pre>
+    <p>它提供兩個工具：先把函式庫名稱解析成 ID，再依主題抓文件。不想每次打 <code>use context7</code>，就在 CLAUDE.md 加一條規則：「使用第三方函式庫的 API 前，先用 context7 查該版本文件」。</p>
+    <p>這是降低幻覺的一種手段，其他同樣重要的做法：</p>
+    <ul>
+      <li>給它驗證手段。有測試、型別檢查、linter 可跑，它就能自己發現錯誤，這項影響最大。</li>
+      <li>要求「先讀再答」：涉及既有程式碼時先開檔確認，不要憑檔名猜。</li>
+      <li>指定範本：「照 @某檔 的模式寫」。</li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3>3-9 【MCP Server】Sentry：用 AI 監控 Web App 錯誤<span class="tag">補充</span></h3>
+    <p>Sentry 收集正式環境的錯誤與效能資料。接上官方的遠端 MCP server 後，Claude 可以直接查 issue、讀 stack trace 與發生當下的環境資訊，再回到 codebase 找原因，除錯流程不必在瀏覽器與編輯器間來回複製貼上。</p>
+<pre><code>claude mcp add --transport http sentry https://mcp.sentry.dev/mcp
+<span class="cm"># 然後在對話中 /mcp 完成 OAuth 登入</span></code></pre>
+<pre><code>查 toy-marketplace 專案過去 24 小時發生次數最多的三個未解決 issue，
+對每一個：找出對應的程式碼位置、判斷根因、提出修正方案。先不要改。</code></pre>
+    <p>專案端要先裝好 Sentry SDK 並上傳 source map，否則 stack trace 是壓縮過的程式碼，AI 也看不懂。錯誤資料可能含使用者個資，留意第 5 章的資安原則。</p>
+  </div>
+
+  <div class="topic">
+    <h3>3-10 【MCP Server】打造你的第一個客製化 MCP Server<span class="tag">補充</span></h3>
+    <p>值得自己寫的時機：公司內部系統沒有現成 server，或想把一段自有腳本變成 AI 可呼叫的能力。官方提供 Python 與 TypeScript SDK，Python 最小範例：</p>
+<pre><code><span class="cm"># server.py    安裝：pip install "mcp[cli]"</span>
+from mcp.server.fastmcp import FastMCP
+
+mcp = FastMCP("my-tools")
+
+@mcp.tool()
+def word_count(text: str) -&gt; dict:
+    """計算文字的字數與行數。text 為要分析的內容。"""
+    return {"chars": len(text), "lines": text.count("\n") + 1}
+
+if __name__ == "__main__":
+    mcp.run()   <span class="cm"># 預設走 stdio</span></code></pre>
+<pre><code>claude mcp add my-tools -- python /絕對路徑/server.py
+
+<span class="cm"># 不經過 Claude、單獨測試 server</span>
+npx @modelcontextprotocol/inspector python server.py</code></pre>
+    <ul>
+      <li>函式的 docstring 與型別標註會變成工具描述與參數 schema，是模型判斷何時呼叫、怎麼填參數的唯一依據。</li>
+      <li>stdio server 的 stdout 是協定通道，<code>print()</code> 除錯訊息會弄壞通訊，log 一律寫 stderr。</li>
+      <li>回傳精簡的結構化資料；工具數量少而精。</li>
+      <li>錯誤要回傳看得懂的訊息，模型才知道怎麼修正後重試。</li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3>3-11 作業：擴充 MCP Server，實作圖片去背工具<span class="tag">補充</span></h3>
+    <p>在 3-10 的 server 加一個工具。Python 用 <code>rembg</code> 套件可以在本機完成去背，不需要外部 API：</p>
+<pre><code><span class="cm"># pip install rembg pillow</span>
+from pathlib import Path
+from PIL import Image
+from rembg import remove
+
+@mcp.tool()
+def remove_background(input_path: str, output_path: str) -&gt; str:
+    """移除圖片背景並輸出透明 PNG。
+    input_path、output_path 皆為絕對路徑，output_path 需以 .png 結尾。"""
+    src = Path(input_path)
+    if not src.is_file():
+        return f"錯誤：找不到檔案 {input_path}"
+    remove(Image.open(src)).save(output_path)
+    return f"完成：{output_path}"</code></pre>
+    <p>設計上的選擇：傳檔案路徑而不是圖片內容，避免把整張圖的 base64 塞進脈絡。第一次執行會下載模型檔，時間較長屬正常。改完 server 程式後要重啟 Claude Code 或在 <code>/mcp</code> 重新連線才會生效。放在 Toy Marketplace 的情境，就是「幫商品圖去背」變成一句話的事。</p>
+  </div>
+
+  <div class="topic">
+    <h3>3-12 MCP Workflow Deep Dive：Claude Code ↔ MCP Server<span class="tag">補充</span></h3>
+    <p>一次工具呼叫背後的完整流程（訊息格式為 JSON-RPC 2.0）：</p>
+    <ol>
+      <li><b>啟動：</b>Claude Code 依設定啟動 server 程序（stdio），或連到遠端 URL。</li>
+      <li><b>initialize：</b>雙方交換協定版本與支援的能力。</li>
+      <li><b>tools/list：</b>取得每個工具的名稱、描述、參數 JSON Schema，放進模型的脈絡。這就是 MCP 佔脈絡的來源。</li>
+      <li><b>模型決策：</b>你下 prompt，模型根據工具描述判斷要不要用、用哪個、參數填什麼。</li>
+      <li><b>權限檢查：</b>Claude Code 攔下這次呼叫，依你的權限設定放行或詢問。</li>
+      <li><b>tools/call：</b>送出請求，server 執行並回傳結果。</li>
+      <li><b>回到模型：</b>結果進入對話，模型決定下一步，可能再呼叫、也可能回答你。</li>
+    </ol>
+    <p>從這個流程得到的推論：</p>
+    <ul>
+      <li>server 本身沒有 AI，它只是被呼叫的函式。模型看不到你的實作，只看得到描述與 schema，所以描述寫不好，工具就不會被用或被誤用。</li>
+      <li>回傳內容會完整進入脈絡，回傳越肥，後續每一輪越貴。</li>
+      <li>除錯先分段：用 Inspector 確認 server 本身正常，再用 <code>/mcp</code> 確認連線，最後才看模型為什麼不呼叫。</li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3>3-13 【MCP Server】客製化 MCP Server 實戰（SSE）：Icon Generator<span class="tag">補充</span></h3>
+    <p>stdio server 每個人都要在自己機器上裝一份。改成網路服務後部署一次、全隊連同一個網址，金鑰也只需要放在伺服器端。</p>
+<pre><code>import os, httpx
+from mcp.server.fastmcp import FastMCP
+
+mcp = FastMCP("icon-generator", host="0.0.0.0", port=8000)
+
+@mcp.tool()
+async def generate_icon(description: str, style: str = "flat", size: int = 512) -&gt; str:
+    """依文字描述產生 App 圖示，回傳圖片網址。
+    style 可為 flat、outline、3d；size 為邊長像素。"""
+    <span class="cm"># 呼叫你選用的圖片生成 API，金鑰留在伺服器端</span>
+    async with httpx.AsyncClient(timeout=120) as c:
+        r = await c.post(os.environ["IMAGE_API_URL"],
+                         headers={"Authorization": f"Bearer {os.environ['IMAGE_API_KEY']}"},
+                         json={"prompt": f"{style} app icon, {description}", "size": size})
+    return r.json()["url"]
+
+mcp.run(transport="sse")</code></pre>
+<pre><code>claude mcp add --transport sse icon-generator http://localhost:8000/sse</code></pre>
+    <div class="todo"><b>版本提醒：</b>MCP 規格已把 SSE 傳輸列為舊式，新的標準是 Streamable HTTP。Claude Code 兩者都支援，新寫的 server 建議改用 <code>mcp.run(transport="streamable-http")</code>，端點是 <code>/mcp</code>，連接時用 <code>--transport http</code>。概念完全相同。</div>
+    <p>對外開放前要加認證（至少檢查 header 的 token）、限流，生成類 API 每次呼叫都是錢。</p>
+  </div>
+</section>
+
+<!-- ======================= 第 4 章 ======================= -->
+<section class="chapter" id="ch4">
+  <p class="ch-num">chapter 04</p>
+  <h2>Claude Code 進階工作流：事件驅動與多 Agent 協作</h2>
+  <p class="ch-meta">共 10 單元：Hook 五單元、Sub-Agent 兩單元、Skill 兩單元、Plugin 一單元</p>
+
+  <div class="origin">
+    <h3>課程頁資料：單元列表</h3>
+    <ol>
+      <li><code>4-1</code>Claude Code Hook 是什麼？事件驅動的 AI 工作流程</li>
+      <li><code>4-2</code>【Hook】Notification：任務完成／失敗的即時事件通知</li>
+      <li><code>4-3</code>【作業】【Hook】Notification：當 Claude 要求權限時，自動音效提醒</li>
+      <li><code>4-4</code>【Hook】PreToolUse：寫入前的規格與安全檢查</li>
+      <li><code>4-5</code>【Hook】PostToolUse：寫入後的自動化測試啟動</li>
+      <li><code>4-6</code>Claude Code Sub-Agent 是什麼？多 Agent 協作模型</li>
+      <li><code>4-7</code>【Sub-Agent】多線程模式：啟用多 Agent 並行處理</li>
+      <li><code>4-8</code>Skill 是什麼？動態 Context 載入機制</li>
+      <li><code>4-9</code>【Skill】以規則約束 AI：資料庫設計原則的強制落地</li>
+      <li><code>4-10</code>【Plugin】從個人到團隊：讓團隊共享 Custom Commands</li>
+    </ol>
+  </div>
+
+  <div class="topic">
+    <h3>4-1 Hook 是什麼：事件驅動的 AI 工作流程<span class="tag">補充</span></h3>
+    <p>寫在 CLAUDE.md 的規則是建議，模型可能忘記或判斷不適用。Hook 是在固定生命週期點由系統執行的處理程式，不經過模型決定，結果是確定的。凡是「每次都必須發生」的事就該用 Hook。</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>事件</th><th>觸發時機</th><th>常見用途</th></tr></thead>
+      <tbody>
+        <tr><td><code>PreToolUse</code></td><td>工具執行前，可阻擋</td><td>擋危險指令、保護檔案、檢查規格</td></tr>
+        <tr><td><code>PostToolUse</code></td><td>工具執行後</td><td>格式化、lint、跑測試</td></tr>
+        <tr><td><code>Notification</code></td><td>需要你注意時</td><td>音效、桌面或手機通知</td></tr>
+        <tr><td><code>Stop</code></td><td>Claude 準備結束回合</td><td>完成通知、品質關卡</td></tr>
+        <tr><td><code>UserPromptSubmit</code></td><td>你送出 prompt 時</td><td>掃描金鑰、附加脈絡</td></tr>
+        <tr><td><code>SubagentStop</code></td><td>Sub-Agent 結束</td><td>驗收子任務</td></tr>
+        <tr><td><code>SessionStart</code></td><td>工作階段開始</td><td>載入分支、近期 issue 等資訊</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>運作方式：事件發生時，Claude Code 把事件資料以 JSON 從 stdin 傳給你的指令；你的指令用結束代碼回話。<code>0</code> 是通過，<code>2</code> 是阻擋並把 stderr 的內容回饋給 Claude，它會據此修正。設定放在 <code>.claude/settings.json</code>（團隊）或 <code>~/.claude/settings.json</code>（個人），用 <code>/hooks</code> 檢視。</p>
+  </div>
+
+  <div class="topic">
+    <h3>4-2 【Hook】Notification：即時事件通知<span class="tag">補充</span></h3>
+    <p>放著 Claude 跑長任務、自己去做別的事，回來才發現它十分鐘前就停下來等你按確認。通知 Hook 解決的就是這個。對應到兩個事件：<code>Notification</code> 在 Claude 等待你的輸入或權限時觸發；任務跑完的通知則掛在 <code>Stop</code>。</p>
+<pre><code><span class="cm">// ~/.claude/settings.json（個人偏好，放全域）</span>
+{
+  "hooks": {
+    "Notification": [{
+      "hooks": [{ "type": "command",
+        "command": "osascript -e 'display notification \"Claude 需要你\" with title \"Claude Code\"'" }]
+    }],
+    "Stop": [{
+      "hooks": [{ "type": "command",
+        "command": "osascript -e 'display notification \"任務完成\" with title \"Claude Code\"'" }]
+    }]
+  }
+}</code></pre>
+    <p>Windows 可用 PowerShell 的 BurntToast 模組或 <code>msg</code>，Linux 用 <code>notify-send</code>。想推到手機，就把指令換成 <code>curl</code> 打 ntfy、Slack 或 LINE 的 webhook；你熟的 n8n webhook 也可以當接收端，再分流到任何地方。stdin 的 JSON 裡有 <code>message</code> 欄位可以帶進通知內文。</p>
+    <p>要區分成功與失敗：Stop 只代表回合結束，不代表成功。可以在 Stop hook 裡自己跑一次測試，依結果發不同通知。</p>
+  </div>
+
+  <div class="topic">
+    <h3>4-3 作業：Claude 要求權限時自動音效提醒<span class="tag">補充</span></h3>
+<pre><code>{
+  "hooks": {
+    "Notification": [{
+      "matcher": "permission_prompt",
+      "hooks": [{ "type": "command",
+        "command": "afplay /System/Library/Sounds/Glass.aiff" }]
+    }]
+  }
+}</code></pre>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>平台</th><th>播放音效的指令</th></tr></thead>
+      <tbody>
+        <tr><td>macOS</td><td><code>afplay /System/Library/Sounds/Glass.aiff</code></td></tr>
+        <tr><td>Windows</td><td><code>powershell -c "(New-Object Media.SoundPlayer 'C:\Windows\Media\notify.wav').PlaySync()"</code></td></tr>
+        <tr><td>Linux</td><td><code>paplay /usr/share/sounds/freedesktop/stereo/message.oga</code></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p><code>matcher</code> 用來只在「要求權限」這類通知時響，閒置提醒不響；較舊的版本不支援對 Notification 設 matcher，就改在腳本裡讀 stdin 的 <code>message</code> 判斷。延伸練習：權限請求與任務完成用不同音效，用聽的就知道該不該回去看。</p>
+  </div>
+
+  <div class="topic">
+    <h3>4-4 【Hook】PreToolUse：寫入前的規格與安全檢查<span class="tag">補充</span></h3>
+    <p>在 Write 或 Edit 真正落地前攔截。stdin 會收到 <code>tool_name</code> 與 <code>tool_input</code>：Write 有 <code>file_path</code> 與 <code>content</code>，Edit 有 <code>file_path</code>、<code>old_string</code>、<code>new_string</code>，所以路徑和即將寫入的內容都檢查得到。</p>
+<pre><code><span class="cm">#!/usr/bin/env python3
+# .claude/hooks/pre_write.py</span>
+import json, re, sys
+
+d = json.load(sys.stdin)
+ti = d.get("tool_input", {})
+path = ti.get("file_path", "")
+text = ti.get("content") or ti.get("new_string") or ""
+
+def block(msg):
+    print(msg, file=sys.stderr); sys.exit(2)   <span class="cm"># 2 = 阻擋，訊息回饋給 Claude</span>
+
+<span class="cm"># 安全：受保護路徑</span>
+if any(s in path for s in (".env", "secrets/", "migrations/2")):
+    block(f"禁止修改 {path}。已存在的 migration 不可變更，請新增一支。")
+
+<span class="cm"># 安全：疑似金鑰</span>
+if re.search(r"(sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN .*PRIVATE KEY)", text):
+    block("內容疑似含有金鑰，請改用環境變數。")
+
+<span class="cm"># 規格：專案慣例</span>
+if path.endswith((".ts", ".tsx")) and re.search(r":\s*any\b", text):
+    block("專案規範禁止使用 any，請給明確型別。")</code></pre>
+<pre><code>"PreToolUse": [{
+  "matcher": "Write|Edit",
+  "hooks": [{ "type": "command",
+    "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre_write.py" }]
+}]</code></pre>
+    <p>阻擋訊息要寫「為什麼」與「該怎麼做」，Claude 會照著改。對 Bash 也可以掛同樣的檢查，擋 <code>rm -rf</code>、<code>git push --force</code>、對正式環境的指令。Hook 要快，幾百毫秒內結束，否則每次寫入都卡。</p>
+  </div>
+
+  <div class="topic">
+    <h3>4-5 【Hook】PostToolUse：寫入後的自動化測試啟動<span class="tag">補充</span></h3>
+    <p>檔案寫入後自動跑檢查，失敗就把錯誤回饋給 Claude，它會立刻修。這把「記得跑測試」從期望變成機制。</p>
+<pre><code><span class="cm">#!/bin/bash
+# .claude/hooks/post_write.sh</span>
+f=$(jq -r '.tool_input.file_path')
+
+case "$f" in
+  *.ts|*.tsx)
+    npx prettier --write "$f" &gt;/dev/null 2&gt;&amp;1
+    out=$(npx vitest related "$f" --run 2&gt;&amp;1) || {
+      echo "$out" | tail -40 &gt;&amp;2     <span class="cm"># 只回饋尾段，避免灌爆脈絡</span>
+      exit 2
+    } ;;
+esac</code></pre>
+<pre><code>"PostToolUse": [{
+  "matcher": "Write|Edit",
+  "hooks": [{ "type": "command",
+    "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/post_write.sh" }]
+}]</code></pre>
+    <ul>
+      <li>只跑相關測試（<code>vitest related</code>、<code>jest --findRelatedTests</code>、pytest 指定檔案）。每次編輯跑全套會慢到無法工作。</li>
+      <li>PostToolUse 無法撤銷已發生的寫入，exit 2 的作用是通知 Claude 有問題。</li>
+      <li>完整測試套件適合放在 <code>Stop</code>：Claude 想收工時跑一次，沒過就 exit 2 擋下，它會繼續修。腳本要檢查輸入中的 <code>stop_hook_active</code>，已經是被擋回來的那一輪就放行，避免無限循環。</li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3>4-6 Sub-Agent 是什麼：多 Agent 協作模型<span class="tag">補充</span></h3>
+    <p>Sub-Agent 是擁有獨立脈絡視窗、專屬 system prompt 與工具權限的子代理。主對話像主管：派任務、收結論，不看過程。</p>
+    <ul>
+      <li><b>脈絡隔離：</b>子代理讀了五十個檔案、跑了三百行測試輸出，主對話只收到一段摘要。</li>
+      <li><b>權限收斂：</b>reviewer 不給寫入工具，它就不可能亂改。</li>
+      <li><b>專業化：</b>每個角色有自己的指示與檢查清單，也可以指定較便宜的模型。</li>
+    </ul>
+    <p>內建的有 Explore（唯讀、快速搜尋）、Plan（Plan Mode 下做研究）、general-purpose。自訂的放 <code>.claude/agents/</code>，用 <code>/agents</code> 建立與管理。</p>
+<pre><code><span class="cm">&lt;!-- .claude/agents/code-reviewer.md --&gt;</span>
+---
+name: code-reviewer
+description: 程式碼審查。完成一段程式修改後主動使用。
+tools: Read, Grep, Glob, Bash
+model: sonnet
+---
+你是資深 reviewer。執行 git diff 檢視變更，依序檢查：
+1. 邏輯錯誤與邊界條件
+2. 安全問題（注入、金鑰外洩、權限檢查遺漏）
+3. 是否有對應測試
+4. 是否符合 CLAUDE.md 的慣例
+依「必須修、建議修、可忽略」分級回報，每項附檔名與行號。</code></pre>
+    <p>限制要知道：子代理從零開始，不知道主對話談過什麼，派工時的任務描述必須自足；子代理不能再派子代理；<code>description</code> 決定 Claude 何時自動委派，要寫明觸發情境。</p>
+  </div>
+
+  <div class="topic">
+    <h3>4-7 【Sub-Agent】多線程模式：多 Agent 並行處理<span class="tag">補充</span></h3>
+    <p>同一則訊息裡派出的多個子代理會同時執行。關鍵是任務之間要獨立、不改同一批檔案。</p>
+<pre><code>同時派三個 sub-agent 分別調查，每個只回報結論與相關檔案路徑：
+1. 前端：購物車狀態怎麼管理、在哪些元件被讀寫
+2. 後端：訂單 API 的驗證與錯誤處理現況
+3. 資料庫：orders 相關的 schema、索引、既有 migration
+全部回來後，彙整成「加入優惠券功能」的實作計畫。</code></pre>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>模式</th><th>做法</th><th>適合</th></tr></thead>
+      <tbody>
+        <tr><td>平行探索</td><td>多個唯讀 agent 各查一塊再彙整</td><td>熟悉大型 codebase、根因調查</td></tr>
+        <tr><td>流水線</td><td>實作 → reviewer → test-runner 依序接力</td><td>有固定品質關卡的開發</td></tr>
+        <tr><td>多視角審查</td><td>安全、效能、可讀性各一個 reviewer 同時看</td><td>重要 PR</td></tr>
+        <tr><td>平行實作</td><td>各自在獨立 git worktree 改不同模組</td><td>互不相依的功能或批次遷移</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>平行寫入同一個工作目錄會互相覆蓋，要寫就用 worktree 隔開（<code>git worktree add ../proj-feature-a -b feature-a</code>），或用內建的 <code>/batch</code> 讓它自動拆分。成本也要算：每個子代理都有自己的脈絡，三個平行就是三份用量，拿來換的是時間與主對話的乾淨。</p>
+  </div>
+
+  <div class="topic">
+    <h3>4-8 Skill 是什麼：動態 Context 載入機制<span class="tag">補充</span></h3>
+    <p>把所有流程與規範都塞進 CLAUDE.md，每次對話都要付這筆脈絡費，而且規則一多模型就抓不到重點。Skill 用三層漸進載入解決：</p>
+    <ol>
+      <li><b>常駐：</b>只有 <code>name</code> 與 <code>description</code>，每個 Skill 幾十個 token。</li>
+      <li><b>觸發時：</b>Claude 判斷當前任務相關，才讀入 <code>SKILL.md</code> 全文。</li>
+      <li><b>需要時：</b>SKILL.md 裡提到的附檔（範本、參考文件、腳本）用到才讀或執行。</li>
+    </ol>
+<pre><code>.claude/skills/
+└── release-notes/
+    ├── SKILL.md            <span class="cm"># 必要：frontmatter + 指示</span>
+    ├── templates/release.md
+    └── scripts/collect.sh  <span class="cm"># 腳本直接執行，內容不佔脈絡</span></code></pre>
+    <p>學員評價提到「AI 常忘了曾經寫過的 skill」，原因幾乎都在 <code>description</code>：它是唯一的觸發依據，要同時寫出「做什麼」與「什麼時候用」，並包含使用者會說的字眼。名稱用小寫加連字號、看得出用途。Skill 也可以用 <code>/skill名稱</code> 手動叫用。</p>
+  </div>
+
+  <div class="topic">
+    <h3>4-9 【Skill】以規則約束 AI：資料庫設計原則的強制落地<span class="tag">補充</span></h3>
+    <p>schema 一旦上線就很難改，而 AI 每次設計資料表的風格都可能不同。把團隊的資料庫規範做成 Skill，凡是碰到 schema 的任務都會先載入。</p>
+<pre><code><span class="cm">&lt;!-- .claude/skills/db-schema-rules/SKILL.md --&gt;</span>
+---
+name: db-schema-rules
+description: 資料庫設計規範。新增或修改資料表、撰寫 migration、設計 schema、調整索引時必須使用。
+---
+# 設計原則
+- 表名 snake_case 複數；主鍵一律 `id`
+- 每張表必有 created_at、updated_at；需要保留紀錄的表用 deleted_at 軟刪除
+- 金額存整數（最小貨幣單位），禁止 float
+- 外鍵必加索引，並明確指定 ON DELETE 行為
+- 列舉值用 CHECK 或對照表，不用魔術數字
+- 已合併的 migration 不可修改，一律新增
+
+# 流程
+1. 先列出變更內容與對既有資料的影響，等我確認
+2. 撰寫 migration，必須包含可回復的 down
+3. 執行 scripts/check_schema.sh，全數通過才算完成
+
+命名細節與範例見 reference/naming.md</code></pre>
+    <p>要注意「強制」的程度：Skill 仍然是給模型的指示，屬於強力建議。真正做到強制，是把可機械檢查的部分寫成腳本，再用 4-4、4-5 的 Hook 在寫入 migration 時執行。Skill 負責讓它第一次就做對，Hook 負責保證做錯時過不了關。</p>
+  </div>
+
+  <div class="topic">
+    <h3>4-10 【Plugin】從個人到團隊：共享 Custom Commands<span class="tag">補充</span></h3>
+    <p>把 <code>.claude/</code> 提交進 repo 只能在單一專案共用。Plugin 把 commands、agents、skills、hooks、MCP 設定打包成一個可安裝、有版本的單位，跨專案、跨團隊發佈。</p>
+<pre><code>team-tools/
+├── .claude-plugin/plugin.json     <span class="cm"># {"name":"team-tools","version":"1.0.0","description":"…"}</span>
+├── commands/deploy-vercel.md
+├── agents/code-reviewer.md
+├── skills/db-schema-rules/SKILL.md
+├── hooks/hooks.json
+└── .mcp.json</code></pre>
+    <p>發佈靠 marketplace：一個 git repo，根目錄有 <code>.claude-plugin/marketplace.json</code> 列出有哪些 plugin。</p>
+<pre><code>/plugin marketplace add your-org/claude-plugins
+/plugin install team-tools@your-org
+<span class="cm"># 安裝後指令帶命名空間</span>
+/team-tools:deploy-vercel prod</code></pre>
+    <p>在專案的 <code>.claude/settings.json</code> 設定 <code>extraKnownMarketplaces</code> 與 <code>enabledPlugins</code>，同事信任該專案資料夾後就會被提示安裝，新人到職不必逐項設定。Plugin 可以夾帶 Hook 與 MCP server，等同可執行的程式，只裝來源可信的，內部 marketplace 的 repo 也要走 code review。</p>
+  </div>
+</section>
+
+<!-- ======================= 第 5 章 ======================= -->
+<section class="chapter" id="ch5">
+  <p class="ch-num">chapter 05</p>
+  <h2>Claude Code 工程化落地：團隊導入與成本控管</h2>
+  <p class="ch-meta">共 7 單元</p>
+
+  <div class="origin">
+    <h3>課程頁資料：單元列表</h3>
+    <ol>
+      <li><code>5-1</code>Claude Code 架構地圖：Command、MCP、Hook、Sub-Agent、Skill</li>
+      <li><code>5-2</code>Claude Code 工程落地：從本地工具到遠端服務的延伸實戰</li>
+      <li><code>5-3</code>Claude Code 成本治理：用量監控與優化策略</li>
+      <li><code>5-4</code>Claude Code 團隊導入：AI-First 的開發流程設計</li>
+      <li><code>5-5</code>Claude Code 資安與權限控管實務</li>
+      <li><code>5-6</code>我在矽谷真正使用的 AI Workflow</li>
+      <li><code>5-7</code>作業：評價與學習心得</li>
+    </ol>
+  </div>
+
+  <div class="topic">
+    <h3>5-1 架構地圖：Command、MCP、Hook、Sub-Agent、Skill<span class="tag">補充</span></h3>
+    <p>前四章學的五種機制，差別在「誰觸發」與「解決什麼問題」：</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>機制</th><th>誰觸發</th><th>本質</th><th>用在</th></tr></thead>
+      <tbody>
+        <tr><td>Command</td><td>你，手動輸入</td><td>存起來的 prompt</td><td>重複下的指示：部署、開 PR、產報告</td></tr>
+        <tr><td>Skill</td><td>模型判斷，或你手動</td><td>按需載入的知識與流程</td><td>偶爾用到的規範與標準作業</td></tr>
+        <tr><td>MCP</td><td>模型判斷</td><td>對外的連接</td><td>存取外部系統：瀏覽器、文件、監控</td></tr>
+        <tr><td>Hook</td><td>系統事件，必定執行</td><td>確定性的自動化</td><td>每次都要發生的檢查與動作</td></tr>
+        <tr><td>Sub-Agent</td><td>模型委派，或你指定</td><td>隔離脈絡的分工</td><td>高噪音、需限權、可平行的子任務</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>底層還有兩塊常駐的地基：CLAUDE.md（每次都要知道的事）與權限設定（能做什麼的邊界）。Plugin 則是把以上全部打包發佈的容器。</p>
+    <p>判斷口訣：要它「知道」用 CLAUDE.md 或 Skill；要它「能做」用 MCP 或 CLI；要它「一定做」用 Hook；要它「分出去做」用 Sub-Agent；你「常叫它做」用 Command。它們會組合使用，例如一個 <code>/ship</code> 指令叫出 reviewer 子代理、子代理用 Playwright MCP 測試、過程受 Hook 把關。</p>
+  </div>
+
+  <div class="topic">
+    <h3>5-2 工程落地：從本地工具到遠端服務<span class="tag">補充</span></h3>
+    <p>這個單元的實際內容我無法確認，從標題推測是把只在個人機器上運作的東西，延伸成團隊可用的服務。常見的三條延伸路線：</p>
+    <h4>MCP：從 stdio 到遠端</h4>
+    <p>延續 3-13。把 server 部署到雲端（容器、serverless 皆可），全隊用 <code>--transport http</code> 連同一個網址，寫進 <code>.mcp.json</code>。要補上認證、限流、log 與用量監控。</p>
+    <h4>Claude Code：從互動到無人值守</h4>
+<pre><code><span class="cm"># Headless：不進互動介面，可放進腳本與 CI</span>
+claude -p "檢查這次 diff 有沒有安全問題，以 JSON 回報" \
+  --output-format json \
+  --allowedTools "Read,Grep,Glob,Bash(git diff:*)"</code></pre>
+    <p>官方的 GitHub Actions 整合可以在 PR 或 issue 裡 <code>@claude</code> 觸發審查與修改（在 Claude Code 裡執行 <code>/install-github-app</code> 設定）。適合的工作：PR 初審、失敗測試的自動修復提案、夜間批次修 lint、自動更新文件。</p>
+    <h4>設定：從個人到組織</h4>
+    <p>個人的 <code>~/.claude/</code> → 專案 repo 的 <code>.claude/</code> → Plugin marketplace → 企業的 managed settings。越往後越能統一，也越需要有人負責維護。</p>
+  </div>
+
+  <div class="topic">
+    <h3>5-3 成本治理：用量監控與優化策略<span class="tag">補充</span></h3>
+    <h4>先看得到</h4>
+    <ul>
+      <li><code>/cost</code>（API 計費）與 <code>/usage</code>（訂閱方案額度）看自己的用量；<code>/context</code> 看錢花在脈絡的哪裡。</li>
+      <li>團隊走 API 的話，在 Console 為工作區設花費上限並檢視每人用量。</li>
+      <li>需要細緻監控可開啟 OpenTelemetry 匯出，接到既有的監控系統。</li>
+    </ul>
+    <h4>再優化</h4>
+    <p>課程簡介點名了模型選擇、Context 控制、Sub-Agent 分工三項，完整的五項我不知道。實務上效果最明顯的五個：</p>
+    <ol>
+      <li><b>模型分級：</b><code>/model</code> 預設 Sonnet；規劃與難題才切 Opus；機械性工作與搜尋型子代理用 Haiku。</li>
+      <li><b>控制脈絡：</b>每次請求都重送整段對話，所以換任務就 <code>/clear</code>、斷點處 <code>/compact</code>。這是最大的單一槓桿。</li>
+      <li><b>Sub-Agent 隔離噪音：</b>測試輸出、log、瀏覽器快照留在子脈絡，不在主對話裡被反覆重送。</li>
+      <li><b>降低固定開銷：</b>精簡 CLAUDE.md、移除用不到的 MCP server、細節流程搬到按需載入的 Skill。</li>
+      <li><b>一次講清楚：</b>具體的 prompt 加 Plan Mode，避免「做錯重來」這種最貴的循環；<code>/goal</code> 一律加回合上限。</li>
+    </ol>
+    <p>衡量標準是「每個完成的任務花多少」，不是「每人每月花多少」。用量高但產出高的人不是問題，燒了 token 卻沒有可合併的 PR 才是。</p>
+  </div>
+
+  <div class="topic">
+    <h3>5-4 團隊導入：AI-First 的開發流程設計<span class="tag">補充</span></h3>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>階段</th><th>AI 負責</th><th>人負責</th></tr></thead>
+      <tbody>
+        <tr><td>需求討論</td><td>整理會議內容、列出模糊點與邊界情況</td><td>決定做什麼、不做什麼</td></tr>
+        <tr><td>任務拆解</td><td>讀 codebase 後提出計畫與影響範圍</td><td>審計畫、定優先順序</td></tr>
+        <tr><td>實作</td><td>寫程式與測試，自我驗證</td><td>適時打斷、修正方向</td></tr>
+        <tr><td>Review</td><td>reviewer 子代理先做第一輪</td><td>看設計是否合理、AI 容易漏的業務脈絡</td></tr>
+        <tr><td>測試</td><td>跑測試、E2E、修失敗項</td><td>驗收、探索性測試</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <h4>需求拆解的方法</h4>
+    <ul>
+      <li>依「垂直切片」拆：每一片都是可執行、可驗收的小功能，而不是「先把所有 API 寫完」。</li>
+      <li>每一片寫驗收條件並指定驗證方式（哪個測試、哪個指令、畫面上看到什麼）。</li>
+      <li>規格與進度寫成 markdown 檔放在 repo，人和 AI 讀同一份。</li>
+    </ul>
+    <h4>哪些交給 AI、哪些要人確認</h4>
+    <ul>
+      <li><b>可放手：</b>樣板程式、測試補齊、重構、文件、型別修正、依既有模式新增的 CRUD。</li>
+      <li><b>AI 做、人必審：</b>商業邏輯、對外 API 變更、效能敏感路徑。</li>
+      <li><b>人主導：</b>認證授權、金流、資料庫 migration、基礎設施設定、任何刪除資料的操作。</li>
+    </ul>
+    <h4>導入步驟</h4>
+    <ol>
+      <li>把 <code>CLAUDE.md</code>、<code>.claude/settings.json</code>、agents、skills、<code>.mcp.json</code> 提交進 repo，全隊的 Claude 拿到同一份脈絡與規則。</li>
+      <li>從低風險處開始：測試與文件，再到 bug 修復，最後才是新功能。</li>
+      <li>責任講明：誰提交誰負責，不論程式是誰寫的。AI 產出的 PR 一樣要小、要有測試、要有清楚描述。</li>
+      <li>每週收集「Claude 又犯了什麼錯」，轉成 CLAUDE.md 規則、Skill 或 Hook。設定會越用越準。</li>
+    </ol>
+  </div>
+
+  <div class="topic">
+    <h3>5-5 資安與權限控管實務<span class="tag">補充</span></h3>
+    <h4>不該進入對話的資料</h4>
+    <ul>
+      <li>金鑰、token、密碼、憑證檔</li>
+      <li>真實客戶個資與正式環境資料庫內容</li>
+      <li>合約或法規限制不得外流的原始碼與文件（先確認公司政策與所用方案的資料保留條款）</li>
+    </ul>
+    <h4>權限設定</h4>
+<pre><code><span class="cm">// .claude/settings.json，進 git 全隊一致</span>
+{
+  "permissions": {
+    "allow": ["Bash(npm run test:*)", "Bash(git diff:*)", "Bash(git status)"],
+    "deny":  ["Read(./.env)", "Read(./.env.*)", "Read(./secrets/**)",
+              "Bash(git push:*)", "Bash(rm -rf:*)", "Bash(curl:*)"]
+  }
+}</code></pre>
+    <p>權限模式用 <code>Shift+Tab</code> 切換：預設（每項詢問）、自動接受編輯、Plan（唯讀）。規則的優先順序是 deny 高於 allow。</p>
+    <h4>多層防護</h4>
+    <ol>
+      <li><b>權限 deny：</b>擋敏感路徑的讀取與不可逆指令。</li>
+      <li><b>PreToolUse Hook：</b>如 4-4，檢查路徑、內容中的金鑰樣式、危險指令。</li>
+      <li><b>UserPromptSubmit Hook：</b>掃描你貼進 prompt 的內容是否含金鑰，有就擋下。</li>
+      <li><b>最小權限：</b>給 Claude 用的資料庫帳號設唯讀、雲端憑證限縮範圍、不要在有正式環境憑證的 shell 裡跑。</li>
+      <li><b>隔離環境：</b><code>--dangerously-skip-permissions</code> 只在沒有機密、網路受限的容器裡用；也可啟用沙箱模式限制檔案與網路存取。</li>
+      <li><b>供應鏈：</b>第三方 MCP server、Plugin、Hook 都是會執行的程式，只裝可信來源。會讀取外部內容的工具（網頁、issue、錯誤訊息）可能夾帶 prompt injection，不要同時開放高風險權限。</li>
+      <li><b>企業管控：</b>管理員下發 managed settings，統一強制權限與 Hook，使用者無法覆蓋。</li>
+    </ol>
+  </div>
+
+  <div class="topic">
+    <h3>5-6 我在矽谷真正使用的 AI Workflow<span class="tag">補充</span></h3>
+    <p>這個單元是講師的個人實務經驗，內容只有課程裡有，這裡無從補充。可以做的是在看這個單元時，用下面的問題整理出你自己的版本：</p>
+    <ul>
+      <li>一天之中哪些工作交給 AI、哪些自己做？判斷依據是什麼？</li>
+      <li>拿到一張 ticket 後，第一個 prompt 怎麼下？用不用 Plan Mode？</li>
+      <li>同時開幾個工作階段？怎麼切換與追蹤？</li>
+      <li>review AI 產出時先看什麼？什麼情況會整段打掉重來？</li>
+      <li>常駐的 Command、Skill、Hook、MCP 各有哪些？哪些試過後來拿掉了？</li>
+      <li>公司對 AI 工具有什麼限制，他怎麼在限制內運作？</li>
+    </ul>
+    <p>把答案對照你自己的工作環境，挑兩三項下週就能試的，比照單全收有用。</p>
+  </div>
+
+  <div class="topic">
+    <h3>5-7 作業：評價與學習心得<span class="tag">補充</span></h3>
+    <p>課程的收尾作業。寫心得時順便盤點成果會更有價值：</p>
+    <ul>
+      <li>你的專案現在有哪些設定已經就位：CLAUDE.md、權限、常用 Command、至少一個 Hook、一個 reviewer 子代理？</li>
+      <li>六個作業（貪食蛇擴充、寶箱游標、GitHub Pages 部署、購買流程測試、去背工具、音效提醒）哪些完成了、卡在哪裡？</li>
+      <li>哪一項帶回工作後效益最明顯？哪一項不適用你的環境，原因是什麼？</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ======================= 附錄 ======================= -->
+<section class="chapter" id="cheatsheet">
+  <p class="ch-num">appendix</p>
+  <h2>指令速查</h2>
+  <p class="ch-meta">補充內容，依使用時機排列</p>
+
+  <div class="topic" style="max-width:none">
+    <div class="scroll">
+    <table>
+      <thead><tr><th>時機</th><th>指令或按鍵</th><th>作用</th></tr></thead>
+      <tbody>
+        <tr><td>初次進專案</td><td><code>/init</code>、<code>/memory</code></td><td>產生與編輯 CLAUDE.md</td></tr>
+        <tr><td></td><td><code>/permissions</code></td><td>設定允許與拒絕規則</td></tr>
+        <tr><td></td><td><code>/mcp</code>、<code>/agents</code>、<code>/hooks</code></td><td>管理 MCP、Sub-Agent、Hook</td></tr>
+        <tr><td>工作中</td><td><code>Shift+Tab</code>、<code>/plan</code></td><td>切換 Plan Mode</td></tr>
+        <tr><td></td><td><code>@路徑</code></td><td>參照檔案或目錄</td></tr>
+        <tr><td></td><td><code>/model</code>、<code>/effort</code></td><td>切換模型、調整推理量</td></tr>
+        <tr><td></td><td><code>Esc</code>；<code>Esc Esc</code> 或 <code>/rewind</code></td><td>打斷；回到 checkpoint</td></tr>
+        <tr><td>放手讓它跑</td><td><code>/goal</code>、<code>/loop</code></td><td>跑到條件達成；定時重複執行</td></tr>
+        <tr><td>對話變長</td><td><code>/context</code>、<code>/compact</code>、<code>/clear</code></td><td>檢視、壓縮、清空脈絡</td></tr>
+        <tr><td>提交前</td><td><code>/review</code>、<code>/security-review</code></td><td>唯讀的程式碼與安全審查</td></tr>
+        <tr><td>成本</td><td><code>/cost</code>、<code>/usage</code></td><td>查看花費與用量</td></tr>
+        <tr><td>終端機</td><td><code>claude -p "…"</code></td><td>Headless，用於腳本與 CI</td></tr>
+        <tr><td></td><td><code>claude -c</code>、<code>claude -r</code></td><td>接續上次、選擇歷史工作階段</td></tr>
+        <tr><td></td><td><code>claude mcp add | list | remove</code></td><td>管理 MCP server</td></tr>
+        <tr><td>團隊共享</td><td><code>/plugin</code></td><td>安裝與管理 Plugin、marketplace</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="todo"><b>版本提醒：</b>Claude Code 更新很快，指令與設定欄位可能調整。實際操作前以 <code>/help</code> 與官方文件為準。</div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<footer>
+  <p>章節與課程資訊取自 HiSKIO 課程頁 <a href="https://hiskio.com/courses/2475">hiskio.com/courses/2475</a>（2026 年 9 月 19 日擷取）。課程內容的著作權屬於講師與 HiSKIO。</p>
+  <p>標示「補充」的段落為獨立整理，參考 Claude Code 官方文件 <a href="https://code.claude.com/docs">code.claude.com/docs</a>，並非課程逐字內容，也不能取代課程本身。</p>
+</footer>
+
+</div>
+<button class="totop" type="button" aria-label="回到頂端">↑</button>
+<script>
+(function(){
+  var d=document, root=d.documentElement; root.classList.add('js');
+  var narrow=window.matchMedia('(max-width:640px)').matches;
+  var topics=[].slice.call(d.querySelectorAll('.topic'));
+
+  function set(t,open){
+    t.classList.toggle('shut',!open);
+    t.querySelector('h3').setAttribute('aria-expanded',open?'true':'false');
+  }
+  topics.forEach(function(t){
+    var h=t.querySelector('h3'); if(!h) return;
+    // 由標題開頭的單元編號產生錨點，例如「2-13、2-14 …」
+    var m=(h.textContent.match(/^[\d\-、 ]+/)||[''])[0].match(/\d-\d+/g)||[];
+    if(m.length){ t.id='u'+m[0]; t.dataset.units=m.join(','); }
+    h.setAttribute('role','button'); h.tabIndex=0;
+    set(t,!narrow);                      // 手機預設收合，先看到整章輪廓
+    h.addEventListener('click',function(){ set(t,t.classList.contains('shut')); });
+    h.addEventListener('keydown',function(e){
+      if(e.key==='Enter'||e.key===' '){ e.preventDefault(); h.click(); }
+    });
+  });
+
+  // 單元列表連到對應的補充內容
+  d.querySelectorAll('.origin li').forEach(function(li){
+    var c=li.querySelector('code'); if(!c) return;
+    var id=c.textContent.trim();
+    var t=topics.filter(function(x){return (x.dataset.units||'').split(',').indexOf(id)>-1;})[0];
+    if(!t) return;
+    var a=d.createElement('a'); a.href='#'+t.id;
+    var span=d.createElement('span');
+    while(c.nextSibling) span.appendChild(c.nextSibling);
+    a.appendChild(c); a.appendChild(span); li.appendChild(a);
+    a.addEventListener('click',function(){ set(t,true); });
+  });
+  if(location.hash){ var tg=d.getElementById(location.hash.slice(1)); if(tg&&tg.classList.contains('topic')) set(tg,true); }
+
+  // 表格：把欄名寫進每格，手機版改成卡片時顯示
+  d.querySelectorAll('table').forEach(function(tb){
+    var hs=[].map.call(tb.querySelectorAll('thead th'),function(th){return th.textContent.trim();});
+    tb.querySelectorAll('tbody tr').forEach(function(tr){
+      [].forEach.call(tr.children,function(td,i){ if(hs[i]&&i>0) td.setAttribute('data-label',hs[i]); });
+    });
+  });
+
+  var tools=d.querySelector('.tools'); tools.hidden=false;
+  d.getElementById('openAll').onclick=function(){ topics.forEach(function(t){set(t,true);}); };
+  d.getElementById('shutAll').onclick=function(){ topics.forEach(function(t){set(t,false);}); };
+
+  // 回到頂端與目前章節標示
+  var top=d.querySelector('.totop');
+  top.onclick=function(){ window.scrollTo({top:0,behavior:'smooth'}); };
+  var links=[].slice.call(d.querySelectorAll('.nav a'));
+  var secs=links.map(function(a){return d.querySelector(a.getAttribute('href'));});
+  var tick=false;
+  function onScroll(){
+    tick=false;
+    top.classList.toggle('show',window.scrollY>600);
+    var cur=-1;
+    secs.forEach(function(s,i){ if(s&&s.getBoundingClientRect().top<140) cur=i; });
+    links.forEach(function(a,i){
+      var on=i===cur; if(a.classList.contains('on')!==on){
+        a.classList.toggle('on',on);
+        if(on&&narrow){ var ul=a.closest('ul'); ul.scrollLeft=a.parentNode.offsetLeft-(ul.clientWidth-a.offsetWidth)/2; }
+      }
+    });
+  }
+  window.addEventListener('scroll',function(){ if(!tick){tick=true;requestAnimationFrame(onScroll);} },{passive:true});
+  onScroll();
+  window.addEventListener('beforeprint',function(){ topics.forEach(function(t){set(t,true);}); });
+})();
+</script>
+</body>
+</html>
